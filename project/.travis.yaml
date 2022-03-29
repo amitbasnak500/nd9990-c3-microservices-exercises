@@ -1,0 +1,21 @@
+language: minimal
+
+services: docker
+
+before_install:
+  - docker -v && docker-compose -v
+
+install:
+  - docker-compose -f project/udacity-deployment/docker/docker-compose-build.yaml build --parallel
+  - docker tag amitbasnak500/reverseproxy amitbasnak500/reverseproxy:v1
+  - docker tag amitbasnak500/udacity-restapi-user amitbasnak500/udacity-restapi-user:v1
+  - docker tag amitbasnak500/udacity-restapi-feed amitbasnak500/udacity-restapi-feed:v1
+  - docker tag amitbasnak500/udacity-frontend amitbasnak500/udacity-frontend:v1
+
+after_success:
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+  - docker push amitbasnak500/reverseproxy:v1
+  - docker push amitbasnak500/udacity-restapi-user:v1
+  - docker push amitbasnak500/udacity-restapi-feed:v1
+  - docker push amitbasnak500/udacity-frontend:v1
+
